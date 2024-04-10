@@ -1,94 +1,112 @@
-/**
- * Data Catalog Project Starter Code - SEA Stage 2
- *
- * This file is where you should be doing most of your work. You should
- * also make changes to the HTML and CSS files, but we want you to prioritize
- * demonstrating your understanding of data structures, and you'll do that
- * with the JavaScript code you write in this file.
- * 
- * The comments in this file are only to help you learn how the starter code
- * works. The instructions for the project are in the README. That said, here
- * are the three things you should do first to learn about the starter code:
- * - 1 - Change something small in index.html or style.css, then reload your 
- *    browser and make sure you can see that change. 
- * - 2 - On your browser, right click anywhere on the page and select
- *    "Inspect" to open the browser developer tools. Then, go to the "console"
- *    tab in the new window that opened up. This console is where you will see
- *    JavaScript errors and logs, which is extremely helpful for debugging.
- *    (These instructions assume you're using Chrome, opening developer tools
- *    may be different on other browsers. We suggest using Chrome.)
- * - 3 - Add another string to the titles array a few lines down. Reload your
- *    browser and observe what happens. You should see a fourth "card" appear
- *    with the string you added to the array, but a broken image.
- * 
- */
-
-
-const FRESH_PRINCE_URL = "https://upload.wikimedia.org/wikipedia/en/3/33/Fresh_Prince_S1_DVD.jpg";
-const CURB_POSTER_URL = "https://m.media-amazon.com/images/M/MV5BZDY1ZGM4OGItMWMyNS00MDAyLWE2Y2MtZTFhMTU0MGI5ZDFlXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_FMjpg_UX1000_.jpg";
-const EAST_LOS_HIGH_POSTER_URL = "https://static.wikia.nocookie.net/hulu/images/6/64/East_Los_High.jpg";
-
-// This is an array of strings (TV show titles)
-let titles = [
-    "Fresh Prince of Bel Air",
-    "Curb Your Enthusiasm",
-    "East Los High"
+// Attempt to load books from localStorage or set default if not available
+let books = JSON.parse(localStorage.getItem('books')) || [
+    { title: "The Hobbit", author: "J.R.R. Tolkien", genre: "Fantasy", year: 1937, rating: 4.8 },
+    { title: "City of Bones", author: "Cassandra Clare", genre: "Fantasy", year: 2007, rating: 4.1 },
+    { title: "City of Ashes", author: "Cassandra Clare", genre: "Fantasy", year: 2008, rating: 4.2 },
+    { title: "1984", author: "George Orwell", genre: "Dystopian", year: 1949, rating: 4.7 },
+    { title: "To Kill a Mockingbird", author: "Harper Lee", genre: "Classic", year: 1960, rating: 4.3 }
 ];
-// Your final submission should have much more data than this, and 
-// you should use more than just an array of strings to store it all.
 
+function updateLocalStorage() {
+    localStorage.setItem('books', JSON.stringify(books));
+}
 
-// This function adds cards the page to display the data in the array
-function showCards() {
-    const cardContainer = document.getElementById("card-container");
-    cardContainer.innerHTML = "";
-    const templateCard = document.querySelector(".card");
-    
-    for (let i = 0; i < titles.length; i++) {
-        let title = titles[i];
+document.addEventListener('DOMContentLoaded', () => {
+    displayBooks();
+    populateGenres();
+    populateRemovalDropdown();
+    document.getElementById('new-book-form').addEventListener('submit', addBook);
+    document.getElementById('genre-filter').addEventListener('change', filterBooks);
+    document.getElementById('sort-rating').addEventListener('click', sortByRating);
+    document.getElementById('remove-book-btn').addEventListener('click', removeBook);
+});
 
-        // This part of the code doesn't scale very well! After you add your
-        // own data, you'll need to do something totally different here.
-        let imageURL = "";
-        if (i == 0) {
-            imageURL = FRESH_PRINCE_URL;
-        } else if (i == 1) {
-            imageURL = CURB_POSTER_URL;
-        } else if (i == 2) {
-            imageURL = EAST_LOS_HIGH_POSTER_URL;
-        }
+function displayBooks(filteredBooks = books) {
+    const container = document.getElementById('book-container');
+    container.innerHTML = '';
+    filteredBooks.forEach(book => {
+        const bookCard = document.createElement('div');
+        bookCard.className = 'book-card';
+        bookCard.innerHTML = `
+            <div class="book-content">
+                <h3>${book.title}</h3>
+                <p>Author: ${book.author}</p>
+                <p>Genre: ${book.genre}</p>
+                <p>Year: ${book.year}</p>
+                <p>Rating: ${book.rating}</p>
+            </div>
+        `;
+        container.appendChild(bookCard);
+    });
+}
 
-        const nextCard = templateCard.cloneNode(true); // Copy the template card
-        editCardContent(nextCard, title, imageURL); // Edit title and image
-        cardContainer.appendChild(nextCard); // Add new card to the container
+function addBook(event) {
+    event.preventDefault();
+    const newBook = {
+        title: document.getElementById('title').value.trim(),
+        author: document.getElementById('author').value.trim(),
+        genre: document.getElementById('genre').value.trim(),
+        year: parseInt(document.getElementById('year').value, 10),
+        rating: parseFloat(document.getElementById('rating').value)
+    };
+    books.push(newBook);
+    updateLocalStorage();
+    displayBooks();
+    populateGenres();
+    populateRemovalDropdown();
+    event.target.reset();
+}
+
+function removeBook() {
+    const removalSelect = document.getElementById('remove-book-select');
+    const bookIndex = parseInt(removalSelect.value, 10);
+    if (!isNaN(bookIndex) && bookIndex >= 0 && bookIndex < books.length) {
+        books.splice(bookIndex, 1);
+        updateLocalStorage();
+        displayBooks();
+        populateGenres();
+        populateRemovalDropdown();
     }
 }
 
-function editCardContent(card, newTitle, newImageURL) {
-    card.style.display = "block";
-
-    const cardHeader = card.querySelector("h2");
-    cardHeader.textContent = newTitle;
-
-    const cardImage = card.querySelector("img");
-    cardImage.src = newImageURL;
-    cardImage.alt = newTitle + " Poster";
-
-    // You can use console.log to help you debug!
-    // View the output by right clicking on your website,
-    // select "Inspect", then click on the "Console" tab
-    console.log("new card:", newTitle, "- html: ", card);
+function populateGenres() {
+    const genreSet = new Set(['all']);
+    books.forEach(book => genreSet.add(book.genre));
+    const genreFilter = document.getElementById('genre-filter');
+    genreFilter.innerHTML = '<option value="all">All Genres</option>';
+    genreSet.forEach(genre => {
+        if (genre !== 'all') {
+            const option = document.createElement('option');
+            option.value = genre;
+            option.textContent = genre;
+            genreFilter.appendChild(option);
+        }
+    });
 }
 
-// This calls the addCards() function when the page is first loaded
-document.addEventListener("DOMContentLoaded", showCards);
-
-function quoteAlert() {
-    console.log("Button Clicked!")
-    alert("I guess I can kiss heaven goodbye, because it got to be a sin to look this good!");
+function populateRemovalDropdown() {
+    const removalSelect = document.getElementById('remove-book-select');
+    removalSelect.innerHTML = '';
+    books.forEach((book, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${book.title} by ${book.author}`;
+        removalSelect.appendChild(option);
+    });
 }
 
-function removeLastCard() {
-    titles.pop(); // Remove last item in titles array
-    showCards(); // Call showCards again to refresh
+function sortByRating() {
+    const selectedGenre = document.getElementById('genre-filter').value;
+    // Filter books based on the selected genre before sorting
+    const booksToSort = selectedGenre === 'all' ? books : books.filter(book => book.genre === selectedGenre);
+
+    const sortedBooks = booksToSort.sort((a, b) => b.rating - a.rating);
+    displayBooks(sortedBooks);
+}
+
+
+function filterBooks() {
+    const selectedGenre = document.getElementById('genre-filter').value;
+    const filteredBooks = selectedGenre === 'all' ? books : books.filter(book => book.genre === selectedGenre);
+    displayBooks(filteredBooks);
 }
