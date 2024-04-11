@@ -14,6 +14,7 @@
         <select id="genre-filter">
             <option value="all">All Genres</option>
         </select>
+        <button id="sort-rating">Sort by Rating</button>
     </div>
     <div id="book-container"></div>
     <div class="add-book-form">
@@ -26,6 +27,13 @@
             <input type="number" id="rating" placeholder="Rating (1-5)" step="0.1" min="1" max="5" required>
             <button type="submit">Add Book</button>
         </form>
+    </div>
+    <div class="remove-book-form">
+        <h2>Remove a Book</h2>
+        <select id="remove-book-select">
+            <!-- Options will be dynamically added here -->
+        </select>
+        <button id="remove-book-btn">Remove Book</button>
     </div>
     <script src="scripts.js"></script>
 </body>

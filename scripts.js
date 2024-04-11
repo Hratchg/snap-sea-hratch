@@ -104,7 +104,6 @@ function sortByRating() {
     displayBooks(sortedBooks);
 }
 
-
 function filterBooks() {
     const selectedGenre = document.getElementById('genre-filter').value;
     const filteredBooks = selectedGenre === 'all' ? books : books.filter(book => book.genre === selectedGenre);

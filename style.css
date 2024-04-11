@@ -1,15 +1,17 @@
 body, html {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    height: 100%; /* Ensure the body takes full page height */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
 }
 
 .main-header {
-    background-color: #333;
-    color: white;
-    padding: 20px;
+    background-color: #008cba; /* A soothing blue */
+    color: #fff;
+    padding: 20px 0;
     text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 #book-container {
@@ -17,56 +19,69 @@ body, html {
     flex-wrap: wrap;
     justify-content: center;
     padding: 20px;
+    gap: 20px; /* Add space between book cards */
 }
 
 .book-card {
     width: 200px;
-    margin: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 8px;
     overflow: hidden;
+    transition: transform 0.2s ease; /* Smooth transition for hover effect */
+}
+
+.book-card:hover {
+    transform: translateY(-5px); /* Slight lift effect on hover */
 }
 
 .book-content h3, .book-content p {
-    margin: 10px;
+    margin: 15px;
+    line-height: 1.5;
 }
 
 .add-book-form, .filter-section, .remove-book-form {
-    margin: 20px;
-    text-align: center;
+    margin: 20px auto; /* Center these sections horizontally */
+    max-width: 500px; /* Limiting max width for better readability */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.add-book-form input, .add-book-form button, #sort-rating, #remove-book-btn {
-    margin: 5px;
+input, select, button {
+    width: 100%; /* Full width */
     padding: 10px;
-    font-size: 16px;
+    margin-top: 10px; /* Add some space at the top of each element */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    transition: border-color 0.2s ease; /* Smooth transition for focus effect */
 }
 
-#sort-rating, #remove-book-btn {
+button {
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
 }
 
-#sort-rating:hover, #remove-book-btn:hover {
+button:hover {
     background-color: #0056b3;
 }
 
-/* Centering the remove-book-form */
-.remove-book-form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column; /* Stack the dropdown and button vertically */
+input:focus, select:focus, button:focus {
+    border-color: #008cba; /* Highlight focus */
+    outline: none;
 }
 
-/* If you want to center the form in the middle of the page vertically */
-/* Adjust this class or container as needed based on your layout */
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Use 100% if you prefer it to take the full parent height */
+h1, h2 {
+    font-weight: normal; /* Less aggressive font-weight */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .add-book-form, .filter-section, .remove-book-form {
+        width: 90%; /* More responsive on smaller screens */
+    }
 }
